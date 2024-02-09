@@ -1,0 +1,98 @@
+AWSTemplateFormatVersion: 2010-09-09
+Description: Create a Security group for specified VPC and subnets
+
+Resources:
+ CFWebServerSG:
+  Type: AWS::EC2::SecurityGroup
+  Properties:
+   GroupDescription: Allow access on ports 80, 3389 and 22
+   GroupName: CFWebServerSG
+   SecurityGroupIngress:
+    - IpProtocol: tcp
+      FromPort: 80
+      ToPort: 80
+      CidrIp: 0.0.0.0/0
+    - IpProtocol: tcp
+      FromPort: 22
+      ToPort: 22
+      CidrIp: 0.0.0.0/0
+    - IpProtocol: tcp
+      FromPort: 3389
+      ToPort: 3389
+      CidrIp: 0.0.0.0/0
+   Tags:
+    - Key: Name
+      Value: CFWebServerSG
+    - Key: Purpose
+      Value: GO Shop Cloud Security Group for web server
+    - Key: Owner
+      Value: GO Shop
+    - Key: Project
+      Value: GO Shop Cloud Project
+   VpcId: vpc-0029b9ef8ad3c4981 # Check if VPC ID is present and accounted for
+   
+ CFWebServerHTTPS:
+  Type: AWS::EC2::SecurityGroup
+  Properties:
+   GroupDescription: Allow access on ports 443
+   GroupName: CFWebServerHTTPSSG
+   SecurityGroupIngress:
+    - IpProtocol: tcp
+      FromPort: 443
+      ToPort: 443
+      CidrIp: 0.0.0.0/0
+   Tags:
+    - Key: Name
+      Value: CFWebServerHTTPS
+    - Key: Purpose
+      Value: GO Shop Cloud Security Group for web server HTTPS
+    - Key: Owner
+      Value: GO Shop
+    - Key: Project
+      Value: GO Shop Cloud Project
+   VpcId: vpc-0029b9ef8ad3c4981 # Check if VPC ID is present and accounted for
+   
+ CFDatabaseSG:
+  Type: AWS::EC2::SecurityGroup
+  Properties:
+   GroupDescription: Allow to access to MySQL database on RDS
+   GroupName: CFDatabaseSG
+   SecurityGroupIngress:
+    - IpProtocol: tcp
+      FromPort: 3306
+      ToPort: 3306
+      SourceSecurityGroupId: !Ref CFWebServerSG
+   Tags:
+    - Key: Name
+      Value: CFDatabaseSG
+    - Key: Purpose
+      Value: GO Shop Cloud Security Group for Database
+    - Key: Owner
+      Value: GO Shop
+    - Key: Project
+      Value: GO Shop Cloud Project
+   VpcId: vpc-0029b9ef8ad3c4981 # Check if VPC ID is present and accounted for
+
+Outputs:
+ CFWebServerSG:
+  Description: Export webserver security group ID
+  Value: !Ref CFWebServerSG
+  Export:
+   Name:
+    'Fn::Sub': ${AWS::StackName}-CFWebServerSG
+    
+ CFWebServerHTTPS:
+  Description: Export webserver security group ID
+  Value: !Ref CFWebServerHTTPS
+  Export:
+   Name:
+    'Fn::Sub': ${AWS::StackName}-CFWebServerHTTPSSG
+    
+ CFDatabaseSG:
+  Description: Export webserver security group ID
+  Value: !Ref CFDatabaseSG
+  Export:
+   Name:
+    'Fn::Sub': ${AWS::StackName}-CFDatabaseSG
+  
+  

@@ -1,0 +1,179 @@
+AWSTemplateFormatVersion: 2010-09-09
+Description: Creates VPC, Internet Gateway and associated subnets
+
+Metadata:
+ AWS::CloudFormation::Interface:
+  ParameterGroups:
+   -
+    Label: 
+     default: "VPC CIDR"
+    Parameters:
+     - CFVpcCIDR
+   -
+    Label:
+     default: "Subnet CIDR"
+    Parameters:
+     - CFPublicSubnetCIDR
+     - CFPrivateSubnet1CIDR
+     - CFPrivatesubnet2CIDR
+Parameters:
+ CFVpcCIDR:
+  Default: 192.168.0.0/24 # Check if is valid IPv4 private block
+  Description: Enter IPv4 block for this VPC
+  Type: String
+  
+ CFPublicSubnetCIDR:
+  Default: 192.168.0.0/26 # Check if is valid IPv4 public block for this subnet
+  Description: Enter IPv4 block for this VPC
+  Type: String
+  
+ CFPrivateSubnet1CIDR:
+  Default: 192.168.0.64/26 # Check if is valid IPv4 private block for this subnet
+  Description: Enter IPv4 block for this VPC
+  Type: String
+  
+ CFPrivateSubnet2CIDR:
+  Default: 192.168.0.128/26 # Check if is valid IPv4 private block for this subnet
+  Description: Enter IPv4 block for this VPC
+  Type: String
+  
+Resources: 
+ CFVPC: # VPC Name
+   Type: AWS::EC2::VPC # Check if resource type is correct for VPC
+   Properties:
+    CidrBlock: !Ref CFVpcCIDR #Check if parameter has the same name for the IPv4 CIDR 
+    EnableDnsHostnames: true
+    EnableDnsSupport: true
+    InstanceTenancy: default
+    Tags:
+    - Key: Name
+      Value: CFVPC
+    - Key: Purpose
+      Value: GO Shop Cloud VPC
+    - Key: Owner
+      Value: GO Shop
+    - Key: Project
+      Value: GO Shop Cloud Project
+    - Key: CIDRBlock
+      Value: 192.168.0.0/24
+ 
+ CFIGW:
+  Type: AWS::EC2::InternetGateway # Check if resource type is correct for Internet Gateway
+  Properties:
+   Tags:
+    - Key: Name
+      Value: CFIGW
+    - Key: Purpose
+      Value: GO Shop Cloud IGW
+    - Key: Owner
+      Value: GO Shop
+    - Key: Project
+      Value: GO Shop Cloud Project
+      
+ CFIGWAttachment:
+  Type: AWS::EC2::VPCGatewayAttachment # Check if resource type is correct for VPCGatewayAttachment
+  Properties:
+   InternetGatewayId: !Ref CFIGW
+   VpcId: !Ref CFVPC
+
+ CFPublicSubnet:
+  Type: AWS::EC2::Subnet #Check if resource type is correct for Subnet
+  Properties:
+   AvailabilityZone: !Select [ 0, !GetAZs '' ]
+   CidrBlock: !Ref CFPublicSubnetCIDR
+   MapPublicIpOnLaunch: true
+   Tags:
+    - Key: Name
+      Value: CFPublicSubnet
+    - Key: Purpose
+      Value: GO Shop Cloud Public Subnet
+    - Key: Owner
+      Value: GO Shop
+    - Key: Project
+      Value: GO Shop Cloud Project
+   VpcId: !Ref CFVPC
+   
+ CFPrivateSubnet1:
+  Type: AWS::EC2::Subnet #Check if resource type is correct for Subnet
+  Properties:
+   AvailabilityZone: !Select [ 0, !GetAZs '' ]
+   CidrBlock: !Ref CFPrivateSubnet1CIDR
+   MapPublicIpOnLaunch: false
+   Tags:
+    - Key: Name
+      Value: CFPrivateSubnet1
+    - Key: Purpose
+      Value: GO Shop Cloud private Subnet
+    - Key: Owner
+      Value: GO Shop
+    - Key: Project
+      Value: GO Shop Cloud Project
+   VpcId: !Ref CFVPC
+ CFPrivateSubnet2:
+  Type: AWS::EC2::Subnet #Check if resource type is correct for Subnet
+  Properties:
+   AvailabilityZone: !Select [ 0, !GetAZs '' ]
+   CidrBlock: !Ref CFPrivateSubnet2CIDR
+   MapPublicIpOnLaunch: false
+   Tags:
+    - Key: Name
+      Value: CFPrivateSubnet2
+    - Key: Purpose
+      Value: GO Shop Cloud private Subnet
+    - Key: Owner
+      Value: GO Shop
+    - Key: Project
+      Value: GO Shop Cloud Project
+   VpcId: !Ref CFVPC
+      
+ CFPublicRouteTable:
+  Type: AWS::EC2::RouteTable
+  Properties:
+   Tags:
+    - Key: Name
+      Value: CFPublicRT
+    - Key: Purpose
+      Value: GO Shop Cloud Route Table
+    - Key: Owner
+      Value: GO Shop
+    - Key: Project
+      Value: GO Shop Cloud Project
+   VpcId: !Ref CFVPC
+   
+ CFPublicRouteTableRoutes:
+  Type: AWS::EC2::Route
+  Properties:
+   DestinationCidrBlock: 0.0.0.0/24
+   GatewayId: !Ref CFIGW
+   RouteTableId: !Ref CFPublicRouteTable #missing RouteTableID
+  
+ CFPublicSubnetRouteAssociation:
+  Type: AWS::EC2::SubnetRouteTableAssociation
+  Properties:
+   RouteTableId: !Ref CFPublicRouteTable
+   SubnetId: !Ref CFPublicSubnet
+ 
+Outputs:
+ CFVPC: 
+  Description: VPC ID
+  Export:
+   Name: !Sub ${AWS::StackName}-CFVPC
+  Value: !Ref CFVPC
+  
+ CFPublicSubnet: 
+  Description: Public Subnet ID
+  Export:
+   Name: !Sub ${AWS::StackName}-CFPublicSubnet # the error missing {AWS:StackName}
+  Value: !Ref CFPublicSubnet
+  
+ CFPrivateSubnet1: 
+  Description: Private Subnet 1 ID
+  Export:
+   Name: !Sub ${AWS::StackName}-CFPrivateSubnet1 # the error missing {AWS:StackName}
+  Value: !Ref CFPrivateSubnet1
+  
+ CFPrivateSubnet2: 
+  Description: Private Subnet 2 ID
+  Export:
+   Name: !Sub ${AWS::StackName}-CFPrivateSubnet2 # the error missing {AWS:StackName}
+  Value: !Ref CFPrivateSubnet2
