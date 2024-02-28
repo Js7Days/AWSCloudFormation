@@ -1,0 +1,137 @@
+AWSTemplateFormatVersion: 2010-09-09
+Description: Create a RDS Database instance for GO Shop
+
+Metadata:
+ AWS::CloudFormation::Interface:
+  ParameterGroups:
+   -
+    Label:
+     default: Database parameters
+    Parameters:
+     - CFDatabaseInstanceIdentifier
+     - CFDatabaseName
+     - CFDatabaseUser
+     - CFDatabasePassword
+     - CFDatabaseBackupRetentionPeriod
+     - CFDatabaseAllocatedStorage
+     - CFDatabaseInstanceClass
+     - CFMultiAZDatabase
+
+Parameters:
+ CFDatabaseInstanceIdentifier:
+  AllowedPattern: '[a-zA-Z][a-zA-Z0-9]*' #only numbers and letters allowed in parameters name
+  ConstraintDescription: RDS Database identifier can only have numbers and letters in its name
+  Default: CFRDS
+  Description: Database instance identifier name
+  MaxLength: 60
+  MinLength: 1
+  Type: String
+  
+ CFDatabaseName:
+  AllowedPattern: '[a-zA-Z][a-zA-Z0-9]*' #only numbers and letters allowed in parameters name
+  ConstraintDescription: RDS Database name can only have numbers and letters in its name
+  Default: CFRDS
+  Description: Database name
+  MaxLength: 64
+  MinLength: 1
+  Type: String
+  
+ CFDatabaseUser:
+  AllowedPattern: '[a-zA-Z][a-zA-Z0-9]*' #only numbers and letters allowed in parameters name
+  ConstraintDescription: RDS Database username can only have numbers and letters in its name
+  Default: admin
+  Description: Database username
+  MaxLength: 16
+  MinLength: 1
+  NoEcho: false
+  Type: String
+  
+ CFDatabasePassword:
+  AllowedPattern: '[a-zA-Z][a-zA-Z0-9]*' #only numbers and letters allowed in parameters name
+  ConstraintDescription: RDS Database password can only have numbers and letters in its name
+  Default: Password01
+  Description: Database password
+  MaxLength: 41
+  MinLength: 8
+  NoEcho: true
+  Type: String
+  
+ CFDatabaseBackupRetentionPeriod:
+  ConstraintDescription: RDS Database maximum backup retention period
+  Default: 7
+  Description: Number of days to retain database backup snapshots
+  MaxValue: 35
+  MinValue: 0
+  NoEcho: false
+  Type: Number
+ 
+ CFDatabaseAllocatedStorage:
+  ConstraintDescription: Sizae must be between 5 and 1024GB
+  Default: 200
+  Description: Database size
+  MaxValue: 65536
+  MinValue: 5
+  NoEcho: false
+  Type: Number
+  
+ CFDatabaseInstanceClass:
+  AllowedValues:
+   - db.t1.micro
+   - db.t2.micro
+   - db.m1.small
+   - db.m1.medium
+   - db.m1.large
+  ConstraintDescription: Must be a valid database instance type
+  Default: db.t2.micro # Smallest possible RDS instance Type
+  Description: Database instance type
+  Type: String
+  
+ CFMultiAZDatabase:
+  AllowedValues:
+   - true
+   - false
+  ConstraintDescription: true or false
+  Default: false # Muti-AZ database not required
+  Description: Muti-AZ Database
+  Type: String
+  
+Resources:
+ CFDatabaseSubnetGroup:
+  Type: AWS::RDS::DBSubnetGroup
+  Properties:
+   DBSubnetGroupDescription: Subnet group for RDS Database
+   SubnetIds:
+    - subnet-0dbe374ff0d7ad8ca
+    - subnet-06421a134661c6907
+   Tags:
+    - Key: name
+      Value: CFDBSubnetGroup
+ 
+ CFDatabaseInstance:
+  Type: AWS::RDS::DBInstance
+  Properties:
+   AllocatedStorage: !Ref CFDatabaseAllocatedStorage
+   AvailabilityZone: !Select [ 0, !GetAZs '']
+   BackupRetentionPeriod: !Ref CFDatabaseBackupRetentionPeriod
+   DBInstanceClass: !Ref CFDatabaseInstanceClass
+   DBInstanceIdentifier: !Ref CFDatabaseInstanceIdentifier
+   DBName: CFDatabaseName
+   DBSubnetGroupName: !Ref CFDatabaseSubnetGroup
+   Engine: mysql # keep in lower case to avoid permission issues
+   EngineVersion: 8.0.36
+   MasterUsername: !Ref CFDatabaseUser
+   MasterUserPassword: !Ref CFDatabasePassword
+   MultiAZ: !Ref CFMultiAZDatabase
+   VPCSecurityGroups:
+    - sg-0427b278ffb1e2fb7 # Check if security group ID for DB is correct
+   Tags:
+    - Key: Name
+      Value: CF-RDSDB
+      
+Outputs:
+ CFRDSEndpoint:
+  Description: Endpoint address for RDS DB
+  Value: {'Fn::GetAtt': ['CFDatabaseInstance','Endpoint.Address']}
+  Export:
+   Name:
+    'Fn::Sub': '${AWS::StackName}-CFRDSEndpoint'

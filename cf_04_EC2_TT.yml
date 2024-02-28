@@ -1,0 +1,36 @@
+AWSTemplateFormatVersion: 2010-09-09
+Description: Create a RDS Database instance for GO Shop
+
+ 
+Resources:
+ CFEC2Instance:
+  Type: AWS::EC2::Instance
+  Properties:
+   InstanceType: t2.micro
+   ImageId: ami-0e731c8a588258d0d
+   KeyName: vockey
+   SubnetId: subnet-09b483eb3eca32d83
+   SecurityGroupIds:
+    - sg-04cec0b17e6526f9a
+    - sg-032c0e27dd4a81ea8
+   Tags:
+    - Key: Name
+      Value: CF-EC2
+   UserData:
+    Fn::Base64:
+     !Sub |
+     #!/bin/bash -xe
+     sudo su
+     sleep 10s
+     sudo dnf update -y
+     sudo dnf install httpd wget php-fpm php-mysqli php-json php php-devel -y
+     sleep 20s
+     sudo dnf install -y mariadb105-server
+     sleep 20s
+     cd /var/www/html
+     wget https://github.com/jptafe/gorgeous_cupcakes/archive/refs/heads/main.zip
+     unzip main.zipcp -r gorgeous_cupcakes-main/* /var/www/html/
+     rm -rf gorgeous_cupcakes-main main.zip
+     sleep 20s
+     sudo systemctl enable httpd
+     sudo systemctl start httpd
