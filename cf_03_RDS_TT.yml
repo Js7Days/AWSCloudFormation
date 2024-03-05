@@ -8,35 +8,35 @@ Metadata:
     Label:
      default: Database parameters
     Parameters:
-     - CFDatabaseInstanceIdentifier
-     - CFDatabaseName
-     - CFDatabaseUser
-     - CFDatabasePassword
-     - CFDatabaseBackupRetentionPeriod
-     - CFDatabaseAllocatedStorage
-     - CFDatabaseInstanceClass
-     - CFMultiAZDatabase
+     - sevendaysDatabaseInstanceIdentifier
+     - sevendaysDatabaseName
+     - sevendaysDatabaseUser
+     - sevendaysDatabasePassword
+     - sevendaysDatabaseBackupRetentionPeriod
+     - sevendaysDatabaseAllocatedStorage
+     - sevendaysDatabaseInstanceClass
+     - sevendaysMultiAZDatabase
 
 Parameters:
- CFDatabaseInstanceIdentifier:
+ sevendaysDatabaseInstanceIdentifier:
   AllowedPattern: '[a-zA-Z][a-zA-Z0-9]*' #only numbers and letters allowed in parameters name
   ConstraintDescription: RDS Database identifier can only have numbers and letters in its name
-  Default: CFRDS
+  Default: sevendaysRDS
   Description: Database instance identifier name
   MaxLength: 60
   MinLength: 1
   Type: String
   
- CFDatabaseName:
+ sevendaysDatabaseName:
   AllowedPattern: '[a-zA-Z][a-zA-Z0-9]*' #only numbers and letters allowed in parameters name
   ConstraintDescription: RDS Database name can only have numbers and letters in its name
-  Default: CFRDS
+  Default: sevendaysRDS
   Description: Database name
   MaxLength: 64
   MinLength: 1
   Type: String
   
- CFDatabaseUser:
+ sevendaysDatabaseUser:
   AllowedPattern: '[a-zA-Z][a-zA-Z0-9]*' #only numbers and letters allowed in parameters name
   ConstraintDescription: RDS Database username can only have numbers and letters in its name
   Default: admin
@@ -46,7 +46,7 @@ Parameters:
   NoEcho: false
   Type: String
   
- CFDatabasePassword:
+ sevendaysDatabasePassword:
   AllowedPattern: '[a-zA-Z][a-zA-Z0-9]*' #only numbers and letters allowed in parameters name
   ConstraintDescription: RDS Database password can only have numbers and letters in its name
   Default: Password01
@@ -56,7 +56,7 @@ Parameters:
   NoEcho: true
   Type: String
   
- CFDatabaseBackupRetentionPeriod:
+ sevendaysDatabaseBackupRetentionPeriod:
   ConstraintDescription: RDS Database maximum backup retention period
   Default: 7
   Description: Number of days to retain database backup snapshots
@@ -65,7 +65,7 @@ Parameters:
   NoEcho: false
   Type: Number
  
- CFDatabaseAllocatedStorage:
+ sevendaysDatabaseAllocatedStorage:
   ConstraintDescription: Sizae must be between 5 and 1024GB
   Default: 200
   Description: Database size
@@ -74,7 +74,7 @@ Parameters:
   NoEcho: false
   Type: Number
   
- CFDatabaseInstanceClass:
+ sevendaysDatabaseInstanceClass:
   AllowedValues:
    - db.t1.micro
    - db.t2.micro
@@ -86,7 +86,7 @@ Parameters:
   Description: Database instance type
   Type: String
   
- CFMultiAZDatabase:
+ sevendaysMultiAZDatabase:
   AllowedValues:
    - true
    - false
@@ -96,42 +96,42 @@ Parameters:
   Type: String
   
 Resources:
- CFDatabaseSubnetGroup:
+ sevendaysDatabaseSubnetGroup:
   Type: AWS::RDS::DBSubnetGroup
   Properties:
    DBSubnetGroupDescription: Subnet group for RDS Database
    SubnetIds:
-    - subnet-0dbe374ff0d7ad8ca
-    - subnet-06421a134661c6907
+    - subnet-0a875feaf63912eb3
+    - subnet-068343ae900c23b5f
    Tags:
     - Key: name
-      Value: CFDBSubnetGroup
+      Value: sevendaysDBSubnetGroup
  
- CFDatabaseInstance:
+ sevendaysDatabaseInstance:
   Type: AWS::RDS::DBInstance
   Properties:
-   AllocatedStorage: !Ref CFDatabaseAllocatedStorage
+   AllocatedStorage: !Ref sevendaysDatabaseAllocatedStorage
    AvailabilityZone: !Select [ 0, !GetAZs '']
-   BackupRetentionPeriod: !Ref CFDatabaseBackupRetentionPeriod
-   DBInstanceClass: !Ref CFDatabaseInstanceClass
-   DBInstanceIdentifier: !Ref CFDatabaseInstanceIdentifier
-   DBName: CFDatabaseName
-   DBSubnetGroupName: !Ref CFDatabaseSubnetGroup
+   BackupRetentionPeriod: !Ref sevendaysDatabaseBackupRetentionPeriod
+   DBInstanceClass: !Ref sevendaysDatabaseInstanceClass
+   DBInstanceIdentifier: !Ref sevendaysDatabaseInstanceIdentifier
+   DBName: sevendaysDatabaseName
+   DBSubnetGroupName: !Ref sevendaysDatabaseSubnetGroup
    Engine: mysql # keep in lower case to avoid permission issues
    EngineVersion: 8.0.36
-   MasterUsername: !Ref CFDatabaseUser
-   MasterUserPassword: !Ref CFDatabasePassword
-   MultiAZ: !Ref CFMultiAZDatabase
+   MasterUsername: !Ref sevendaysDatabaseUser
+   MasterUserPassword: !Ref sevendaysDatabasePassword
+   MultiAZ: !Ref sevendaysMultiAZDatabase
    VPCSecurityGroups:
-    - sg-0427b278ffb1e2fb7 # Check if security group ID for DB is correct
+    - sg-07df6460ea6256f26 # Check if security group ID for DB is correct
    Tags:
     - Key: Name
-      Value: CF-RDSDB
+      Value: sevendays-RDSDB
       
 Outputs:
- CFRDSEndpoint:
+ sevendaysRDSEndpoint:
   Description: Endpoint address for RDS DB
-  Value: {'Fn::GetAtt': ['CFDatabaseInstance','Endpoint.Address']}
+  Value: {'Fn::GetAtt': ['sevendaysDatabaseInstance','Endpoint.Address']}
   Export:
    Name:
-    'Fn::Sub': '${AWS::StackName}-CFRDSEndpoint'
+    'Fn::Sub': '${AWS::StackName}-sevendaysRDSEndpoint'
