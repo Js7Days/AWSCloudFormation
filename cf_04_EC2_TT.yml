@@ -3,19 +3,19 @@ Description: Create a RDS Database instance for GO Shop
 
  
 Resources:
- CFEC2Instance:
+ 7daysEC2Instance:
   Type: AWS::EC2::Instance
   Properties:
    InstanceType: t2.micro
-   ImageId: ami-0e731c8a588258d0d
+   ImageId: ami-0440d3b780d96b29d
    KeyName: vockey
-   SubnetId: subnet-09b483eb3eca32d83
+   SubnetId: subnet-09b23d88670f58605
    SecurityGroupIds:
-    - sg-04cec0b17e6526f9a
-    - sg-032c0e27dd4a81ea8
+    - sg-0797b809a23de4c46
+    - sg-0beda6271f5a81040
    Tags:
     - Key: Name
-      Value: CF-EC2
+      Value: 7days-EC2
    UserData:
     Fn::Base64:
      !Sub |
@@ -25,7 +25,7 @@ Resources:
      sudo dnf update -y
      sudo dnf install httpd wget php-fpm php-mysqli php-json php php-devel -y
      sleep 20s
-     sudo dnf install -y mariadb105-server
+     sudo dnf install -y mariadb-server
      sleep 20s
      cd /var/www/html
      wget https://github.com/jptafe/gorgeous_cupcakes/archive/refs/heads/main.zip
