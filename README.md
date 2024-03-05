@@ -35,11 +35,11 @@ Please note that you must change the scripts before deploying on the CloudFormat
    Default: Hello@123 | You must change your password
 2. cf_01_VPC_TT <br>
    You can deploy directly to this file, but please note that after deployment is completed, vpcid, security group and subnets.
-3. cf_02_SG_TT
+3. cf_02_SG_TT <br>
    VpcId: vpc-0072f1135f3693c5d | You must change your vpc id as mentioned in step 2, there are 3 vpc-id in this script.
-4. cf_03_RDS_TT
+4. cf_03_RDS_TT <br>
    There are 2 SubnetIds in this script, you must change to your SubnetIds as mentioned in step 2. 
-5. cf_04_EC2_TT
+5. cf_04_EC2_TT <br>
    There 2 SecurityGroupIds in this script, you must change to your SecurityGroupIds as mentioned in step 2.
    
 ## About me
