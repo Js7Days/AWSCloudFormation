@@ -8,172 +8,201 @@ Metadata:
     Label: 
      default: "VPC CIDR"
     Parameters:
-     - CFVpcCIDR
+     - 7daysVpcCIDR
    -
     Label:
      default: "Subnet CIDR"
     Parameters:
-     - CFPublicSubnetCIDR
-     - CFPrivateSubnet1CIDR
-     - CFPrivatesubnet2CIDR
+     - 7daysPublicSubnetCIDR
+     - 7daysPrivateSubnet1CIDR
+     - 7daysPrivatesubnet2CIDR
 Parameters:
- CFVpcCIDR:
+ 7daysVpcCIDR:
   Default: 192.168.0.0/24 # Check if is valid IPv4 private block
   Description: Enter IPv4 block for this VPC
   Type: String
   
- CFPublicSubnetCIDR:
+ 7daysPublicSubnetCIDR:
   Default: 192.168.0.0/26 # Check if is valid IPv4 public block for this subnet
   Description: Enter IPv4 block for this VPC
   Type: String
   
- CFPrivateSubnet1CIDR:
+ 7daysPrivateSubnet1CIDR:
   Default: 192.168.0.64/26 # Check if is valid IPv4 private block for this subnet
   Description: Enter IPv4 block for this VPC
   Type: String
   
- CFPrivateSubnet2CIDR:
+ 7daysPrivateSubnet2CIDR:
   Default: 192.168.0.128/26 # Check if is valid IPv4 private block for this subnet
   Description: Enter IPv4 block for this VPC
   Type: String
   
+ 7daysPrivateSubnet3CIDR:
+  Default: 192.168.0.192/26 # Check if is valid IPv4 private block for this subnet
+  Description: Enter IPv4 block for this VPC
+  Type: String
+ 
+  
 Resources: 
- CFVPC: # VPC Name
+ 7daysVPC: # VPC Name
    Type: AWS::EC2::VPC # Check if resource type is correct for VPC
    Properties:
-    CidrBlock: !Ref CFVpcCIDR #Check if parameter has the same name for the IPv4 CIDR 
-    EnableDnsHostnames: true
+    CidrBlock: !Ref 7daysVpcCIDR #Check if parameter has the same name for the IPv4 CIDR 
+    EnableDnsHostnames: true  #Error because  EnableDnsHostname it misssing the s at the end
     EnableDnsSupport: true
     InstanceTenancy: default
     Tags:
     - Key: Name
-      Value: CFVPC
+      Value: 7daysVPC
     - Key: Purpose
-      Value: GO Shop Cloud VPC
+      Value: 7days Cloud VPC
     - Key: Owner
-      Value: GO Shop
+      Value: 7days
     - Key: Project
-      Value: GO Shop Cloud Project
+      Value: 7days Cloud Project
     - Key: CIDRBlock
       Value: 192.168.0.0/24
  
- CFIGW:
+ 7daysIGW:
   Type: AWS::EC2::InternetGateway # Check if resource type is correct for Internet Gateway
   Properties:
    Tags:
     - Key: Name
-      Value: CFIGW
+      Value: 7daysIGW
     - Key: Purpose
-      Value: GO Shop Cloud IGW
+      Value: 7days Cloud IGW
     - Key: Owner
-      Value: GO Shop
+      Value: 7days
     - Key: Project
-      Value: GO Shop Cloud Project
+      Value: 7days Cloud Project
       
- CFIGWAttachment:
+ 7daysIGWAttachment:
   Type: AWS::EC2::VPCGatewayAttachment # Check if resource type is correct for VPCGatewayAttachment
   Properties:
-   InternetGatewayId: !Ref CFIGW
-   VpcId: !Ref CFVPC
+   InternetGatewayId: !Ref 7daysIGW
+   VpcId: !Ref 7daysVPC
 
- CFPublicSubnet:
+ 7daysPublicSubnet:
   Type: AWS::EC2::Subnet #Check if resource type is correct for Subnet
   Properties:
    AvailabilityZone: !Select [ 0, !GetAZs '' ]
-   CidrBlock: !Ref CFPublicSubnetCIDR
+   CidrBlock: !Ref 7daysPublicSubnetCIDR
    MapPublicIpOnLaunch: true
    Tags:
     - Key: Name
-      Value: CFPublicSubnet
+      Value: 7daysPublicSubnet
     - Key: Purpose
-      Value: GO Shop Cloud Public Subnet
+      Value: 7days Cloud Public Subnet
     - Key: Owner
-      Value: GO Shop
+      Value: 7days
     - Key: Project
-      Value: GO Shop Cloud Project
-   VpcId: !Ref CFVPC
+      Value: 7days Cloud Project
+   VpcId: !Ref 7daysVPC
    
- CFPrivateSubnet1:
+ 7daysPrivateSubnet1:
   Type: AWS::EC2::Subnet #Check if resource type is correct for Subnet
   Properties:
-   AvailabilityZone: !Select [ 0, !GetAZs '' ]
-   CidrBlock: !Ref CFPrivateSubnet1CIDR
+   AvailabilityZone: !Select [ 1, !GetAZs '' ]
+   CidrBlock: !Ref 7daysPrivateSubnet1CIDR
    MapPublicIpOnLaunch: false
    Tags:
     - Key: Name
-      Value: CFPrivateSubnet1
+      Value: 7daysPrivateSubnet1
     - Key: Purpose
-      Value: GO Shop Cloud private Subnet
+      Value: 7days Cloud private Subnet
     - Key: Owner
-      Value: GO Shop
+      Value: 7days
     - Key: Project
-      Value: GO Shop Cloud Project
-   VpcId: !Ref CFVPC
- CFPrivateSubnet2:
+      Value: 7days Cloud Project
+   VpcId: !Ref 7daysVPC
+ 7daysPrivateSubnet2:
   Type: AWS::EC2::Subnet #Check if resource type is correct for Subnet
   Properties:
    AvailabilityZone: !Select [ 0, !GetAZs '' ]
-   CidrBlock: !Ref CFPrivateSubnet2CIDR
+   CidrBlock: !Ref 7daysPrivateSubnet2CIDR
    MapPublicIpOnLaunch: false
    Tags:
     - Key: Name
-      Value: CFPrivateSubnet2
+      Value: 7daysPrivateSubnet2
     - Key: Purpose
-      Value: GO Shop Cloud private Subnet
+      Value: 7days Cloud private Subnet
     - Key: Owner
-      Value: GO Shop
+      Value: 7days
     - Key: Project
-      Value: GO Shop Cloud Project
-   VpcId: !Ref CFVPC
-      
- CFPublicRouteTable:
+      Value: 7days Cloud Project
+   VpcId: !Ref 7daysVPC
+ 
+ 7daysPrivateSubnet3:
+  Type: AWS::EC2::Subnet #Check if resource type is correct for Subnet
+  Properties:
+   AvailabilityZone: !Select [ 2, !GetAZs '' ]
+   CidrBlock: !Ref 7daysPrivateSubnet3CIDR
+   MapPublicIpOnLaunch: false
+   Tags:
+    - Key: Name
+      Value: 7daysPrivateSubnet3
+    - Key: Purpose
+      Value: 7days Cloud private Subnet
+    - Key: Owner
+      Value: 7days
+    - Key: Project
+      Value: 7days Cloud Project
+   VpcId: !Ref 7daysVPC 
+   
+ 7daysPublicRouteTable:
   Type: AWS::EC2::RouteTable
   Properties:
    Tags:
     - Key: Name
-      Value: CFPublicRT
+      Value: 7daysPublicRT
     - Key: Purpose
-      Value: GO Shop Cloud Route Table
+      Value: 7days Cloud Route Table
     - Key: Owner
-      Value: GO Shop
+      Value: 7days
     - Key: Project
-      Value: GO Shop Cloud Project
-   VpcId: !Ref CFVPC
+      Value: 7days Cloud Project
+   VpcId: !Ref 7daysVPC
    
- CFPublicRouteTableRoutes:
+ 7daysPublicRouteTableRoutes:
   Type: AWS::EC2::Route
   Properties:
    DestinationCidrBlock: 0.0.0.0/24
-   GatewayId: !Ref CFIGW
-   RouteTableId: !Ref CFPublicRouteTable #missing RouteTableID
+   GatewayId: !Ref 7daysIGW
+   RouteTableId: !Ref 7daysPublicRouteTable #missing RouteTableID
   
- CFPublicSubnetRouteAssociation:
+ 7daysPublicSubnetRouteAssociation:
   Type: AWS::EC2::SubnetRouteTableAssociation
   Properties:
-   RouteTableId: !Ref CFPublicRouteTable
-   SubnetId: !Ref CFPublicSubnet
- 
+   RouteTableId: !Ref 7daysPublicRouteTable
+   SubnetId: !Ref 7daysPublicSubnet
+      
 Outputs:
- CFVPC: 
+ 7daysVPC: 
   Description: VPC ID
   Export:
-   Name: !Sub ${AWS::StackName}-CFVPC
-  Value: !Ref CFVPC
+   Name: !Sub ${AWS::StackName}-7daysVPC
+  Value: !Ref 7daysVPC
   
- CFPublicSubnet: 
+ 7daysPublicSubnet: 
   Description: Public Subnet ID
   Export:
-   Name: !Sub ${AWS::StackName}-CFPublicSubnet # the error missing {AWS:StackName}
-  Value: !Ref CFPublicSubnet
+   Name: !Sub ${AWS::StackName}-7daysPublicSubnet # the error missing {AWS:StackName}
+  Value: !Ref 7daysPublicSubnet
   
- CFPrivateSubnet1: 
+ 7daysPrivateSubnet1: 
   Description: Private Subnet 1 ID
   Export:
-   Name: !Sub ${AWS::StackName}-CFPrivateSubnet1 # the error missing {AWS:StackName}
-  Value: !Ref CFPrivateSubnet1
+   Name: !Sub ${AWS::StackName}-7daysPrivateSubnet1 # the error missing {AWS:StackName}
+  Value: !Ref 7daysPrivateSubnet1
   
- CFPrivateSubnet2: 
+ 7daysPrivateSubnet2: 
   Description: Private Subnet 2 ID
   Export:
-   Name: !Sub ${AWS::StackName}-CFPrivateSubnet2 # the error missing {AWS:StackName}
-  Value: !Ref CFPrivateSubnet2
+   Name: !Sub ${AWS::StackName}-7daysPrivateSubnet2 # the error missing {AWS:StackName}
+  Value: !Ref 7daysPrivateSubnet2
+  
+ 7daysPrivateSubnet3: 
+  Description: Private Subnet 3 ID
+  Export:
+   Name: !Sub ${AWS::StackName}-7daysPrivateSubnet3
+  Value: !Ref 7daysPrivateSubnet3
