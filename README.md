@@ -31,9 +31,9 @@ Copy and paste this link to the browser: https://github.com/Js7Days/AWSCloudForm
 
 ## Important Noted:
 Please note that you must change the scripts before deploying on the CloudFormation console.
-1. in cf_00_Secrets
+1. cf_00_Secrets <br>
    Default: Hello@123 | You must change your password
-2. cf_01_VPC_TT
+2. cf_01_VPC_TT <br>
    You can deploy directly to this file, but please note that after deployment is completed, vpcid, security group and subnets.
 3. cf_02_SG_TT
    VpcId: vpc-0072f1135f3693c5d | You must change your vpc id as mentioned in step 2, there are 3 vpc-id in this script.
