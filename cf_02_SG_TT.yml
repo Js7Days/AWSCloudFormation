@@ -2,11 +2,11 @@ AWSTemplateFormatVersion: 2010-09-09
 Description: Create a Security group for specified VPC and subnets
 
 Resources:
- CFWebServerSG:
+ 7daysWebServerSG:
   Type: AWS::EC2::SecurityGroup
   Properties:
    GroupDescription: Allow access on ports 80, 3389 and 22
-   GroupName: CFWebServerSG
+   GroupName: 7daysWebServerSG
    SecurityGroupIngress:
     - IpProtocol: tcp
       FromPort: 80
@@ -22,20 +22,20 @@ Resources:
       CidrIp: 0.0.0.0/0
    Tags:
     - Key: Name
-      Value: CFWebServerSG
+      Value: 7daysWebServerSG
     - Key: Purpose
-      Value: GO Shop Cloud Security Group for web server
+      Value: 7days Cloud Security Group for web server
     - Key: Owner
-      Value: GO Shop
+      Value: 7days
     - Key: Project
-      Value: GO Shop Cloud Project
-   VpcId: vpc-0029b9ef8ad3c4981 # Check if VPC ID is present and accounted for
+      Value: 7days Cloud Project
+   VpcId: vpc-0072f1135f3693c5d # Check if VPC ID is present and accounted for
    
- CFWebServerHTTPS:
+ 7daysWebServerHTTPS:
   Type: AWS::EC2::SecurityGroup
   Properties:
    GroupDescription: Allow access on ports 443
-   GroupName: CFWebServerHTTPSSG
+   GroupName: 7daysWebServerHTTPSSG
    SecurityGroupIngress:
     - IpProtocol: tcp
       FromPort: 443
@@ -43,56 +43,56 @@ Resources:
       CidrIp: 0.0.0.0/0
    Tags:
     - Key: Name
-      Value: CFWebServerHTTPS
+      Value: 7daysWebServerHTTPS
     - Key: Purpose
-      Value: GO Shop Cloud Security Group for web server HTTPS
+      Value: 7days Cloud Security Group for web server HTTPS
     - Key: Owner
-      Value: GO Shop
+      Value: 7days
     - Key: Project
-      Value: GO Shop Cloud Project
-   VpcId: vpc-0029b9ef8ad3c4981 # Check if VPC ID is present and accounted for
+      Value: 7days Cloud Project
+   VpcId: vpc-0072f1135f3693c5d # Check if VPC ID is present and accounted for
    
- CFDatabaseSG:
+ 7daysDatabaseSG:
   Type: AWS::EC2::SecurityGroup
   Properties:
    GroupDescription: Allow to access to MySQL database on RDS
-   GroupName: CFDatabaseSG
+   GroupName: 7daysDatabaseSG
    SecurityGroupIngress:
     - IpProtocol: tcp
       FromPort: 3306
       ToPort: 3306
-      SourceSecurityGroupId: !Ref CFWebServerSG
+      SourceSecurityGroupId: !Ref 7daysWebServerSG
    Tags:
     - Key: Name
-      Value: CFDatabaseSG
+      Value: 7daysDatabaseSG
     - Key: Purpose
-      Value: GO Shop Cloud Security Group for Database
+      Value: 7days Cloud Security Group for Database
     - Key: Owner
-      Value: GO Shop
+      Value: 7days
     - Key: Project
-      Value: GO Shop Cloud Project
-   VpcId: vpc-0029b9ef8ad3c4981 # Check if VPC ID is present and accounted for
+      Value: 7days Cloud Project
+   VpcId: vpc-0072f1135f3693c5d # Check if VPC ID is present and accounted for
 
 Outputs:
- CFWebServerSG:
+ 7daysWebServerSG:
   Description: Export webserver security group ID
-  Value: !Ref CFWebServerSG
+  Value: !Ref 7daysWebServerSG
   Export:
    Name:
-    'Fn::Sub': ${AWS::StackName}-CFWebServerSG
+    'Fn::Sub': ${AWS::StackName}-7daysWebServerSG
     
- CFWebServerHTTPS:
+ 7daysWebServerHTTPS:
   Description: Export webserver security group ID
-  Value: !Ref CFWebServerHTTPS
+  Value: !Ref 7daysWebServerHTTPS
   Export:
    Name:
-    'Fn::Sub': ${AWS::StackName}-CFWebServerHTTPSSG
+    'Fn::Sub': ${AWS::StackName}-7daysWebServerHTTPSSG
     
- CFDatabaseSG:
+ 7daysDatabaseSG:
   Description: Export webserver security group ID
-  Value: !Ref CFDatabaseSG
+  Value: !Ref 7daysDatabaseSG
   Export:
    Name:
-    'Fn::Sub': ${AWS::StackName}-CFDatabaseSG
+    'Fn::Sub': ${AWS::StackName}-7daysDatabaseSG
   
   
