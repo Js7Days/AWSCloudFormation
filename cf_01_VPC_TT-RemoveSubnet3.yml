@@ -1,0 +1,179 @@
+AWSTemplateFormatVersion: 2010-09-09
+Description: Creates VPC, Internet Gateway and associated subnets
+
+Metadata:
+ AWS::CloudFormation::Interface:
+  ParameterGroups:
+   -
+    Label: 
+     default: "VPC CIDR"
+    Parameters:
+     - 7daysVpcCIDR
+   -
+    Label:
+     default: "Subnet CIDR"
+    Parameters:
+     - 7daysPublicSubnetCIDR
+     - 7daysPrivateSubnet1CIDR
+     - 7daysPrivatesubnet2CIDR
+Parameters:
+ 7daysVpcCIDR:
+  Default: 192.168.0.0/24 # Check if is valid IPv4 private block
+  Description: Enter IPv4 block for this VPC
+  Type: String
+  
+ 7daysPublicSubnetCIDR:
+  Default: 192.168.0.0/26 # Check if is valid IPv4 public block for this subnet
+  Description: Enter IPv4 block for this VPC
+  Type: String
+  
+ 7daysPrivateSubnet1CIDR:
+  Default: 192.168.0.64/26 # Check if is valid IPv4 private block for this subnet
+  Description: Enter IPv4 block for this VPC
+  Type: String
+  
+ 7daysPrivateSubnet2CIDR:
+  Default: 192.168.0.128/26 # Check if is valid IPv4 private block for this subnet
+  Description: Enter IPv4 block for this VPC
+  Type: String
+  
+Resources: 
+ sevendaysVPC: # VPC Name ~ Change from 7daysVPC to sevendayVPC
+   Type: AWS::EC2::VPC # Make sure if resource type is correct for VPC
+   Properties:
+    CidrBlock: !Ref 7daysVpcCIDR #Check if parameter has the same name for the IPv4 CIDR 
+    EnableDnsHostnames: true  #
+    EnableDnsSupport: true
+    InstanceTenancy: default
+    Tags:
+    - Key: Name
+      Value: sevendaysVPC
+    - Key: Purpose
+      Value: 7days Cloud VPC
+    - Key: Owner
+      Value: 7days
+    - Key: Project
+      Value: 7days Cloud Project
+    - Key: CIDRBlock
+      Value: 192.168.0.0/24
+ 
+ 7daysIGW:
+  Type: AWS::EC2::InternetGateway # Check if resource type is correct for Internet Gateway
+  Properties:
+   Tags:
+    - Key: Name
+      Value: 7daysIGW
+    - Key: Purpose
+      Value: 7days Cloud IGW
+    - Key: Owner
+      Value: 7days
+    - Key: Project
+      Value: 7days Cloud Project
+      
+ 7daysIGWAttachment:
+  Type: AWS::EC2::VPCGatewayAttachment # Check if resource type is correct for VPCGatewayAttachment
+  Properties:
+   InternetGatewayId: !Ref 7daysIGW
+   VpcId: !Ref sevendaysVPC
+
+ 7daysPublicSubnet:
+  Type: AWS::EC2::Subnet #Check if resource type is correct for Subnet
+  Properties:
+   AvailabilityZone: !Select [ 0, !GetAZs '' ]
+   CidrBlock: !Ref 7daysPublicSubnetCIDR
+   MapPublicIpOnLaunch: true
+   Tags:
+    - Key: Name
+      Value: 7daysPublicSubnet
+    - Key: Purpose
+      Value: 7days Cloud Public Subnet
+    - Key: Owner
+      Value: 7days
+    - Key: Project
+      Value: 7days Cloud Project
+   VpcId: !Ref sevendaysVPC
+   
+ 7daysPrivateSubnet1:
+  Type: AWS::EC2::Subnet #Check if resource type is correct for Subnet
+  Properties:
+   AvailabilityZone: !Select [ 1, !GetAZs '' ]
+   CidrBlock: !Ref 7daysPrivateSubnet1CIDR
+   MapPublicIpOnLaunch: false
+   Tags:
+    - Key: Name
+      Value: 7daysPrivateSubnet1
+    - Key: Purpose
+      Value: 7days Cloud private Subnet
+    - Key: Owner
+      Value: 7days
+    - Key: Project
+      Value: 7days Cloud Project
+   VpcId: !Ref sevendaysVPC
+ 7daysPrivateSubnet2:
+  Type: AWS::EC2::Subnet #Check if resource type is correct for Subnet
+  Properties:
+   AvailabilityZone: !Select [ 0, !GetAZs '' ]
+   CidrBlock: !Ref 7daysPrivateSubnet2CIDR
+   MapPublicIpOnLaunch: false
+   Tags:
+    - Key: Name
+      Value: 7daysPrivateSubnet2
+    - Key: Purpose
+      Value: 7days Cloud private Subnet
+    - Key: Owner
+      Value: 7days
+    - Key: Project
+      Value: 7days Cloud Project
+   VpcId: !Ref sevendaysVPC
+   
+ 7daysPublicRouteTable:
+  Type: AWS::EC2::RouteTable
+  Properties:
+   Tags:
+    - Key: Name
+      Value: 7daysPublicRT
+    - Key: Purpose
+      Value: 7days Cloud Route Table
+    - Key: Owner
+      Value: 7days
+    - Key: Project
+      Value: 7days Cloud Project
+   VpcId: !Ref sevendaysVPC
+   
+ 7daysPublicRouteTableRoutes:
+  Type: AWS::EC2::Route
+  Properties:
+   DestinationCidrBlock: 0.0.0.0/24
+   GatewayId: !Ref 7daysIGW
+   RouteTableId: !Ref 7daysPublicRouteTable #missing RouteTableID
+  
+ 7daysPublicSubnetRouteAssociation:
+  Type: AWS::EC2::SubnetRouteTableAssociation
+  Properties:
+   RouteTableId: !Ref 7daysPublicRouteTable
+   SubnetId: !Ref 7daysPublicSubnet
+      
+Outputs:
+ sevendaysVPC: 
+  Description: VPC ID
+  Export:
+   Name: !Sub ${AWS::StackName}-sevendaysVPC
+  Value: !Ref sevendaysVPC
+  
+ 7daysPublicSubnet: 
+  Description: Public Subnet ID
+  Export:
+   Name: !Sub ${AWS::StackName}-7daysPublicSubnet # the error missing {AWS:StackName}
+  Value: !Ref 7daysPublicSubnet
+  
+ 7daysPrivateSubnet1: 
+  Description: Private Subnet 1 ID
+  Export:
+   Name: !Sub ${AWS::StackName}-7daysPrivateSubnet1 # the error missing {AWS:StackName}
+  Value: !Ref 7daysPrivateSubnet1
+  
+ 7daysPrivateSubnet2: 
+  Description: Private Subnet 2 ID
+  Export:
+   Name: !Sub ${AWS::StackName}-7daysPrivateSubnet2 # the error missing {AWS:StackName}
+  Value: !Ref 7daysPrivateSubnet2
