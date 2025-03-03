@@ -1,0 +1,64 @@
+
+Amazon S3 Bucket
+aws s3api create-bucket --bucket daydreambucket --region us-east-1
+
+Amazon VPC AWS CLI
+aws ec2 create-vpc --cidr-block 10.10.10.0/24 --tag-specifications 'ResourceType=vpc,Tags=[{Key=Name,Value=dtaVPC},{Key=Project,Value=DTA Project},{Key=Owner,Value=DTA}]'
+
+Internet Gateway CLI
+aws ec2 create-internet-gateway --tag-specifications 'ResourceType=internet-gateway,Tags=[{Key=Name,Value=dta-igw1},{Key=Project,Value=DTA Project},{Key=Owner,Value=DTA}]'
+
+Attach to VPC
+aws ec2 attach-internet-gateway --vpc-id vpc-04816a1356754aa8c --internet-gateway-id igw-0204c8266f72080e0
+
+
+Checking Internet Gateway and attached to VPC
+aws ec2 describe-internet-gateways --query 'InternetGateways[?Attachments[?VpcId==`vpc-04816a1356754aa8c`]]'
+
+
+
+
+Create Route Table 
+aws ec2 create-route-table --vpc-id vpc-04816a1356754aa8c --tag-specifications 'ResourceType=route-table,Tags=[{Key=Name,Value=dta-rt-public1},{Key=Project,Value=DTA Project},{Key=Owner,Value=DTA}]'
+
+Create Route Table Destination CIRDBlock
+aws ec2 create-route --route-table-id rtb-05d9ccca313e2fb81 --destination-cidr-block 0.0.0.0/0 --gateway-id igw-0204c8266f72080e0
+
+
+Create Security Group
+aws ec2 create-security-group \
+    --group-name dta-sg \
+    --description "DTA Security Group" \
+    --tag-specifications 'ResourceType=security-group,Tags=[{Key=Name,Value=dta-sg},{Key=Project,Value=DTA Project},{Key=Owner,Value=DTA}]'
+
+
+Create inbound rules to security group
+aws ec2 authorize-security-group-ingress \
+    --group-id sg-08eac28165bf25ba7 \
+    --protocol tcp \
+    --port 443 \
+    --cidr 0.0.0.0/0
+
+aws ec2 authorize-security-group-ingress \
+    --group-id sg-08eac28165bf25ba7 \
+    --protocol icmp \
+    --port -1 \
+    --cidr 0.0.0.0/0
+
+aws ec2 authorize-security-group-ingress \
+    --group-id sg-08eac28165bf25ba7 \
+    --protocol tcp \
+    --port 80 \
+    --cidr 0.0.0.0/0
+
+aws ec2 authorize-security-group-ingress \
+    --group-id sg-08eac28165bf25ba7 \
+    --protocol tcp \
+    --port 3389 \
+    --cidr 0.0.0.0/0
+
+aws ec2 authorize-security-group-ingress \
+    --group-id sg-08eac28165bf25ba7 \
+    --protocol tcp \
+    --port 22 \
+    --cidr 0.0.0.0/0
